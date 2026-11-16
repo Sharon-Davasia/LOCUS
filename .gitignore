@@ -1,0 +1,10 @@
+node_modules/
+dist/
+build/
+coverage/
+.vite/
+.locus/
+*.tsbuildinfo
+*.log
+.DS_Store
+Unselected files/

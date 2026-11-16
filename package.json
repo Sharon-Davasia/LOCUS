@@ -1,0 +1,62 @@
+{
+  "name": "locus-context",
+  "version": "0.1.0",
+  "description": "Local-first project memory engine, context compiler, and seamless IDE handoff bridge (Cursor <-> Claude Code <-> Windsurf <-> Codex)",
+  "type": "module",
+  "bin": {
+    "locus": "./dist/cli/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "docs"
+  ],
+  "scripts": {
+    "build:core": "tsc -p tsconfig.json",
+    "build:web": "vite build --config web/vite.config.ts",
+    "build": "npm run build:core && npm run build:web",
+    "dev:api": "tsx src/cli/index.ts ui --api-only --port 4317 --host 0.0.0.0",
+    "dev:web": "vite --config web/vite.config.ts --host 0.0.0.0 --port 5173",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p web/tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": [
+    "locus",
+    "mcp",
+    "memory",
+    "handoff",
+    "cursor",
+    "claude-code",
+    "ide",
+    "context-compiler",
+    "sqlite"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.1.8",
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "better-sqlite3": "^13.2.0",
+    "commander": "^15.1.0",
+    "hono": "^4.13.18",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.5",
+    "@types/better-sqlite3": "^9.6.0",
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.3.0",
+    "lucide-react": "^1.73.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "tailwindcss": "^4.3.5",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8",
+    "vitest": "^5.1.0"
+  }
+}
