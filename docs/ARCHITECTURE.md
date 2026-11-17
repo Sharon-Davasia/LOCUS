@@ -28,7 +28,7 @@ Engineers using Claude Code and Cursor side-by-side frequently check out paralle
 
 Instead, `inspectGitRepo()` (`src/core/git.ts`) resolves:
 - `repoRoot` (`git rev-parse --show-toplevel`) — worktree-specific root where local IDE bridge files are written.
-- `gitCommonDir` (`git rev-parse --git-common-dir`) — canonical shared `.git` directory hashed to derive `project_id` (`proj_<sha1>`).
+- `gitCommonDir` (`git rev-parse --git-common-dir`) — canonical shared `.git` directory hashed to derive `project_id` (`proj_<12-char-sha1>`).
 
 As a result:
 - **Decisions, Dead Ends, Conventions, and Research** are immediately shared across all worktrees of the same repository.
@@ -63,13 +63,15 @@ Locus implements a millisecond **3-signal local hybrid ranker**:
    - Splits `camelCase` / `PascalCase` / `snake_case`, applies light suffix stemming, extracts token bigrams and 4-character subword n-grams, and projects them via signed FNV-1a hashing into an L2-normalized 256-dimensional `Float32Array` (stored as a 1 KB `BLOB` per memory).
    - Computes exact cosine similarity in `<0.2ms` across hundreds of project notes with zero network calls or external model downloads.
 3. **Contextual Reranking:**
-   - **Recency score:** Smooth 14-day half-life decay (`1 / (1 + ageHours / 336)`).
+   - **Recency score:** Smooth decay that halves the recency score at 14 days (`1 / (1 + ageHours / 336)`, where 336 hours = 14 days).
    - **Active File Boost (`+0.12`):** Memories referencing files currently uncommitted in `git status` rank higher automatically.
    - **Branch & Pin Boost:** Pinned items (`+0.08`) and current-branch entries (`+0.05`) surface first.
 
 Final score formula:
 
 $$\text{Score} = 0.52 \cdot \text{BM25}_{\text{norm}} + 0.33 \cdot \cos(\vec{q}, \vec{d}) + 0.08 \cdot \text{Recency} + \text{ContextBoost}$$
+
+`ContextBoost` is the sum of whichever boosts apply to a memory: active file (`+0.12`), pinned (`+0.08`), and current branch (`+0.05`).
 
 ---
 
@@ -82,5 +84,5 @@ Locus avoids both **cold starts** (where an agent forgets to call an MCP tool on
    - Unused budget from empty tiers rolls forward automatically to populated tiers.
    - Emits `TokenBudgetReport` so you can inspect exact per-section token consumption in `locus status` or Mission Control.
 2. **Pull Channel (`src/mcp/server.ts`):**
-   - When the agent sees a relevant Research Vault pointer (`mem_a1b2c3d4 — Ed25519 Latency Benchmarks [crypto, benchmarks]`) or wants deeper history, it calls `locus_get_entry` or `locus_search` on demand.
+   - When the agent sees a relevant Research Vault pointer (`mem_a1b2c3d4ef — Ed25519 Latency Benchmarks [crypto, benchmarks]`) or wants deeper history, it calls `locus_get_entry` or `locus_search` on demand.
    - Any mutation via MCP (`locus_checkpoint`, `locus_record`, `locus_update_task`) immediately triggers `writeIdeBridges()` so disk rules stay synchronized in real time.
