@@ -82,10 +82,18 @@ Why `.git/info/exclude` instead of `.gitignore`?
 ## 4. Recommended Switching Workflow (Cursor ↔ Claude Code)
 
 ### Scenario A: Graceful Switch (Best Quality)
-1. Before leaving Cursor (or Claude Code), run the MCP prompt `/prepare-handoff` or tell the agent: *"Save a Locus checkpoint and log any dead ends."*
+1. Before leaving Cursor (or Claude Code), run the Locus `prepare-handoff` MCP prompt (exposed in Claude Code as `/mcp__locus__prepare-handoff`) or tell the agent: *"Save a Locus checkpoint and log any dead ends."*
 2. Open Claude Code (or Cursor). The compiled `.locus/HANDOFF.md` is already loaded—continue working immediately.
 
 ### Scenario B: Abrupt Switch (Rate Limit / Crash / Closed Window)
 1. Run `locus sync` in your terminal (takes `<100ms`).
 2. Locus harvests the latest uningested Cursor `state.vscdb` or Claude Code `.jsonl` session, merges live `git status` dirty files, updates the branch Handoff Capsule, and recompiles all IDE bridge files.
 3. Open your next IDE and pick right up where you left off.
+
+---
+
+## 5. Troubleshooting
+
+- **Bridge files missing or stale?** Run `locus doctor` to verify the database path, worktree mapping, and bridge files, then `locus init` to repair them.
+- **Not sure what the next IDE will see?** Run `locus status` to check the current objective, Git Drift warnings, and token budget, or `locus handoff` to print the compiled capsule.
+- **Last session not reflected in the capsule?** Run `locus sync` to harvest the latest Cursor or Claude Code session and recompile all bridges.
