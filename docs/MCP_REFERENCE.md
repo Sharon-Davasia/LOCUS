@@ -117,3 +117,27 @@ Triggers immediate session harvesting (Cursor `state.vscdb` + Claude Code JSONL 
 | :--- | :--- | :--- |
 | `resume-work` | *(none)* | Injects the active Handoff Capsule and instructs the incoming IDE agent to verify drifted files and continue seamlessly. |
 | `prepare-handoff` | `targetIde?: string` | Guides the current IDE agent to log new `decision`s / `dead_end`s via `locus_record` and save a clean `locus_checkpoint` before switching IDEs. |
+
+---
+
+## 4. Shared Types
+
+| Type | Values |
+| :--- | :--- |
+| `MemoryKind` | `'decision' \| 'dead_end' \| 'research' \| 'convention' \| 'note'` |
+| `SourceIde` | `'cursor' \| 'claude-code' \| 'windsurf' \| 'codex' \| 'cli' \| 'ui' \| 'mcp' \| 'git'` |
+
+---
+
+## 5. Tool Summary
+
+| Tool | Changes stored state | Recompiles IDE bridges |
+| :--- | :---: | :---: |
+| `locus_get_handoff` | No | No |
+| `locus_checkpoint` | Yes | Yes |
+| `locus_record` | Yes | Yes |
+| `locus_search` | No | No |
+| `locus_get_entry` | No | No |
+| `locus_list_recent` | No | No |
+| `locus_update_task` | Yes | Yes |
+| `locus_sync` | Yes | Yes |
