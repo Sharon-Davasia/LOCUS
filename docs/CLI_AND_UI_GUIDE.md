@@ -12,6 +12,15 @@ Initializes Locus inside a repository.
 locus init [--project <path>] [--targets cursor,claude-code,agents,windsurf] [--max-tokens 850] [--shared] [--no-mcp] [--no-hooks]
 ```
 
+| Flag | Description |
+| :--- | :--- |
+| `--project <path>` | Repository to initialize (defaults to the current directory) |
+| `--targets <list>` | Comma-separated IDE bridge files to generate |
+| `--max-tokens <n>` | Token cap for `.locus/HANDOFF.md` (default `850`) |
+| `--shared` | Commit bridge files to Git instead of excluding them locally |
+| `--no-mcp` | Skip editing `.cursor/mcp.json` and `.mcp.json` |
+| `--no-hooks` | Skip adding Claude Code lifecycle hooks |
+
 ### `locus status`
 Displays the active project ID, branch, dirty file count, last active IDE, current objective, structured memory counts, Git Drift warnings, and capsule token budget utilization.
 ```bash
@@ -22,7 +31,9 @@ locus status [--json]
 Outputs the compiled `.locus/HANDOFF.md` capsule to `stdout`. Pass `--briefing` for a self-contained resume prompt ready to pipe to `pbcopy` / `xclip`.
 ```bash
 locus handoff
-locus handoff --briefing | pbcopy
+locus handoff --briefing | pbcopy                      # macOS
+locus handoff --briefing | xclip -selection clipboard  # Linux
+locus handoff --briefing | clip                        # Windows
 ```
 
 ### `locus checkpoint`
@@ -75,6 +86,14 @@ locus log       # Inspect chronological Cross-IDE Continuity Timeline
 locus doctor    # Verify SQLite DB path, git worktree mapping, and bridge files
 ```
 
+### Related Commands
+These are normally invoked by your IDE rather than typed by hand:
+```bash
+locus mcp --project /absolute/path/to/repo   # Start the MCP server over stdio (see MCP_REFERENCE.md)
+locus hook stop                              # Claude Code Stop hook (always exits 0)
+locus hook pre-compact                       # Claude Code PreCompact hook (always exits 0)
+```
+
 ---
 
 ## 2. Mission Control Web UI (`locus ui`)
@@ -96,7 +115,7 @@ Mission Control organizes project continuity into five interactive views:
    - Side-by-side architectural guardrails separating *Dead Ends ("Do Not Retry")* from *Active Decisions*.
    - Highlights **Git Drift** (`Verify: file modified since recorded`) with a one-click **"Mark Verified at Current HEAD"** button (`reanchorCommit: true`).
 3. **Research Vault & Hybrid Search:**
-   - Real-time hybrid search bar combining FTS5 BM25, 256-dim local vector similarity, and active file boost.
+   - Real-time hybrid search bar combining FTS5 BM25, 256-dim local vector similarity, recency, and active file boost.
    - Kind filter pills, expandable Markdown body viewer, pin toggle, and **+ Record Memory** modal.
 4. **IDE Bridges & Preview:**
    - Live switcher inspecting `.locus/HANDOFF.md`, `.cursor/rules/locus-handoff.mdc`, and the pasteable Resume Briefing.
