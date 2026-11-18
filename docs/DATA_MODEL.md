@@ -15,6 +15,13 @@ PRAGMA synchronous = NORMAL;
 PRAGMA foreign_keys = ON;
 ```
 
+| Pragma | Why it matters |
+| :--- | :--- |
+| `journal_mode = WAL` | Lets multiple readers proceed while a writer is active |
+| `busy_timeout = 5000` | A blocked connection waits up to 5,000 ms instead of failing immediately |
+| `synchronous = NORMAL` | Safe with WAL and faster than `FULL` for frequent small writes |
+| `foreign_keys = ON` | Required for `ON DELETE CASCADE` to remove a project's handoffs and memories |
+
 ---
 
 ## 2. Relational Schema
@@ -101,4 +108,4 @@ Idempotency watermarks (`UNIQUE(project_id, source)`) ensuring `locus sync` neve
 
 - **Zero Telemetry / Zero Cloud Sync:** All project memories, embeddings, and harvested session summaries remain strictly on your laptop disk (`~/.locus/locus.db` and `.locus/`).
 - **Read-Only IDE Inspection:** Session harvesters open Cursor's `state.vscdb` with `{ readonly: true }` and read Claude Code's `.jsonl` transcripts non-destructively.
-- **Zero Git Pollution:** Local bridge artifacts are excluded via `.git/info/exclude` unless `--shared` is explicitly passed.
+- **Zero Git Pollution:** Local bridge artifacts are excluded via `.git/info/exclude` unless `--shared` is explicitly passed. See [IDE_INTEGRATION.md](IDE_INTEGRATION.md#3-clean-git-hygiene-model) for the exact managed block.
